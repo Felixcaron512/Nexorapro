@@ -1,6 +1,6 @@
-name = "nexoraprodesk"
+name = "nexorapro"
 compatibility_date = "2026-03-31"
-main = "src/index.js"
+main = "api.js"
 
 [[d1_databases]]
 binding = "DB"
