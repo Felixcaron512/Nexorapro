@@ -1,5 +1,5 @@
 {
-  "name": "worker-name",
+  "name": "nexorapro",
   "compatibility_date": "2026-03-31",
   "d1_databases": [
     {
@@ -7,12 +7,8 @@
       "database_name": "orgportal-db",
       "database_id": "67b30e03-a31f-4e9a-930d-100ca3245f0b"
     }
-  ]
+  ],  // ← Add comma here
   "assets": {
     "directory": "./dist"
   }
 }
-
-
-
- 
