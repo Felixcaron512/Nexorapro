@@ -9,6 +9,6 @@
     }
   ],
   "assets": {
-    "directory": "dist"  // or ".output" - whatever your build outputs
+    "directory": "dist"
   }
 }
