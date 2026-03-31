@@ -1,0 +1,8 @@
+{
+  "name": "nexorapro",
+  "compatibility_date": "2026-03-31",
+  "d1_databases": [...],
+  "assets": {
+    "directory": "./.output"  // or "./build", "./dist"
+  }
+}
