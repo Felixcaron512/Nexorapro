@@ -1,0 +1,9 @@
+{
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "orgportal-db",
+      "database_id": "VOTRE_DATABASE_ID_ICI"
+    }
+  ]
+}
