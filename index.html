@@ -287,7 +287,7 @@
     </div>
 
     <script>
-        const API_URL = '/api/login';
+        const API_URL = 'https://nexoraprodesk.fromhelix409.workers.dev/api/login';
         
         function showError(message) {
             const errorDiv = document.getElementById('error');
@@ -314,7 +314,10 @@
                 
                 if (data.success) {
                     // Stocker les informations dans localStorage
-                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('user', JSON.stringify({
+                        ...data.user,
+                        code: code
+                    }));
                     localStorage.setItem('organization', JSON.stringify(data.organization));
                     localStorage.setItem('projects', JSON.stringify(data.projects));
                     
