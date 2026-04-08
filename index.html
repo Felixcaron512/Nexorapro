@@ -1,859 +1,1794 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nexora Pro</title>
+  <title>Vibe Coder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0c0d10;
+      --surface: #14161c;
+      --surface2: #1b1e27;
+      --border: #2a2f3d;
+      --text: #e8eaef;
+      --muted: #8b92a5;
+      --accent: #6ee7b7;
+      --accent-dim: #34d399;
+      --danger: #f87171;
+      --warn: #fbbf24;
+      --chat-user: #1e293b;
+      --radius: 10px;
+      --font-sans: "DM Sans", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
     body {
-      font-family: Segoe UI, Tahoma, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      color: #222;
-      padding: 24px;
+      font-family: var(--font-sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
     }
-    .container {
-      max-width: 1300px;
-      margin: 0 auto;
+
+    .app {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      height: 100vh;
+      min-height: 480px;
     }
-    .card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.18);
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+      flex-wrap: wrap;
     }
-    .auth-wrap {
-      max-width: 460px;
-      margin: 40px auto;
-    }
-    h1, h2, h3 {
-      margin-bottom: 16px;
-    }
-    .subtitle {
-      color: #666;
-      margin-bottom: 18px;
-    }
-    .field {
-      margin-bottom: 16px;
-    }
-    .field label {
-      display: block;
+
+    header h1 {
+      font-size: 1rem;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin: 0;
+      letter-spacing: -0.02em;
+      color: var(--accent);
     }
-    .field input, .field select, .field textarea {
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    label.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    input[type="text"], input[type="password"] {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      flex: 1;
+      min-width: 120px;
+      max-width: 320px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.15);
+    }
+
+    button {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover { background: #232734; }
+    button.primary {
+      background: linear-gradient(135deg, #059669 0%, var(--accent-dim) 100%);
+      border-color: transparent;
+      color: #042f1f;
+    }
+    button.primary:hover { filter: brightness(1.08); }
+    button.danger { border-color: var(--danger); color: var(--danger); }
+    button.danger:hover { background: rgba(248, 113, 113, 0.12); }
+    button.ghost { background: transparent; }
+
+    .main {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) 380px;
+      min-height: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .main { grid-template-columns: 1fr; grid-template-rows: minmax(140px, 25vh) 1fr minmax(200px, 35vh); }
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .panel:last-child { border-right: none; }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.65rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .panel-head .actions { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+
+    .file-list {
+      flex: 1;
+      overflow: auto;
+      padding: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.45rem;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--muted);
+      word-break: break-all;
+    }
+
+    .file-item:hover { background: var(--surface2); color: var(--text); }
+    .file-item.active { background: var(--surface2); color: var(--accent); }
+
+    .editor-wrap {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: var(--bg);
+    }
+
+    .editor-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+    }
+
+    .tab {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab.active { background: var(--surface2); color: var(--accent); }
+
+    textarea.editor {
+      flex: 1;
       width: 100%;
-      border: 2px solid #e6e6e6;
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 15px;
+      min-height: 200px;
+      resize: none;
+      border: none;
+      padding: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.55;
+      background: var(--bg);
+      color: var(--text);
+    }
+    textarea.editor:focus { outline: none; }
+
+    .view-tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-left: auto;
+    }
+    .view-tabs button {
+      font-size: 0.7rem;
+      padding: 0.3rem 0.55rem;
+      border-radius: 4px;
+      opacity: 0.85;
+    }
+    .view-tabs button.active {
+      border-color: var(--accent-dim);
+      color: var(--accent);
+      opacity: 1;
+    }
+
+    .editor-stack {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .editor-stack .editor { flex: 1; min-height: 180px; }
+    .editor-stack .preview-pane {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      min-height: 0;
+      gap: 0;
+    }
+    .editor-stack.preview-mode .editor { display: none; }
+    .editor-stack.preview-mode .preview-pane { display: flex; }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      padding: 0.4rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.72rem;
+    }
+    .preview-toolbar label { color: var(--muted); margin: 0; }
+    .preview-toolbar select {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.3rem 0.45rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      max-width: 200px;
+    }
+    .preview-frame-wrap {
+      flex: 1.2;
+      min-height: 140px;
+      position: relative;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+    .preview-frame-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .terminal-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 120px;
+      max-height: 42vh;
+      background: #0a0b0d;
+    }
+    .terminal-head {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .terminal-head .spacer { flex: 1; }
+    .terminal-out {
+      flex: 1;
+      margin: 0;
+      padding: 0.45rem 0.55rem;
+      overflow: auto;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      line-height: 1.45;
+      color: #c8cdd8;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .terminal-out .out-meta { color: #6b7280; }
+    .terminal-out .out-err { color: var(--danger); }
+    .terminal-out .out-ok { color: var(--accent-dim); }
+    .terminal-in-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.5rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+    }
+    .terminal-in-row span.prompt { color: var(--accent-dim); flex-shrink: 0; }
+    .terminal-in-row input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
       outline: none;
     }
-    .field textarea {
-      resize: vertical;
-      min-height: 90px;
-    }
-    .field input:focus, .field select:focus, .field textarea:focus {
-      border-color: #667eea;
-    }
-    .btn {
-      border: none;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-weight: 700;
-      cursor: pointer;
-      color: white;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    .btn.secondary {
-      background: #2d3748;
-    }
-    .btn.danger {
-      background: #dc3545;
-    }
-    .btn + .btn {
-      margin-left: 8px;
-    }
-    .error, .success, .info {
-      border-radius: 10px;
-      padding: 12px 14px;
-      margin-bottom: 14px;
-      display: none;
-    }
-    .error { background: #fde8e8; color: #b91c1c; }
-    .success { background: #dcfce7; color: #166534; }
-    .info { background: #dbeafe; color: #1d4ed8; }
-    .hidden { display: none !important; }
 
-    .topbar {
+    .chat-panel { background: var(--surface); }
+
+    .messages {
+      flex: 1;
+      overflow: auto;
+      padding: 0.65rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      background: white;
-      border-radius: 18px;
-      padding: 22px 26px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.12);
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .topbar h1 {
-      margin-bottom: 4px;
-      color: #4f46e5;
-    }
-    .muted { color: #666; }
-    .user-badge {
-      background: #f3f4f6;
-      padding: 12px 14px;
-      border-radius: 12px;
-      min-width: 240px;
+      flex-direction: column;
+      gap: 0.65rem;
     }
 
-    .grid {
-      display: grid;
-      gap: 20px;
+    .bubble {
+      max-width: 100%;
+      padding: 0.65rem 0.75rem;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
-    .grid.stats {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      margin-bottom: 20px;
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--chat-user);
+      border: 1px solid var(--border);
     }
-    .stat-card {
-      background: #fff;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    .bubble.assistant {
+      align-self: stretch;
+      background: var(--surface2);
+      border: 1px solid var(--border);
     }
-    .stat-label {
-      color: #6b7280;
-      font-size: 14px;
-      margin-bottom: 10px;
+    .bubble.system {
+      align-self: stretch;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+    }
+    .bubble .role {
+      font-size: 0.65rem;
       text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-    .stat-value {
-      font-size: 32px;
-      font-weight: 800;
-      color: #111827;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
     }
 
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 20px;
-    }
-    @media (max-width: 960px) {
-      .dashboard-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .project-card, .user-card, .org-card {
-      background: #f8fafc;
-      border-left: 5px solid #667eea;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-    .tag {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 700;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #e0e7ff;
-      color: #3730a3;
-      margin-top: 10px;
-      margin-right: 8px;
-    }
-    .tag.role-admin { background: #fee2e2; color: #991b1b; }
-    .tag.role-superadmin { background: #fef3c7; color: #92400e; }
-    .tag.role-manager { background: #dbeafe; color: #1d4ed8; }
-    .tag.role-user { background: #dcfce7; color: #166534; }
-
-    .section-card {
-      background: white;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.08);
-    }
-
-    .tabs {
+    .composer {
       display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding: 0.65rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 0.6rem;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .composer textarea:focus { outline: none; border-color: var(--accent-dim); }
+
+    .composer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
-    }
-    .tab-btn {
-      background: #eef2ff;
-      color: #3730a3;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .tab-btn.active {
-      background: #4f46e5;
-      color: white;
     }
 
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    .split-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    @media (max-width: 720px) {
-      .split-2 { grid-template-columns: 1fr; }
+    .hint {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin: 0;
     }
 
-    .small {
-      font-size: 13px;
-      color: #666;
+    .status {
+      font-size: 0.75rem;
+      color: var(--muted);
     }
-    .list-empty {
-      color: #777;
-      padding: 12px 0;
+    .status.error { color: var(--danger); }
+    .status.ok { color: var(--accent); }
+
+    .toolbar-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      user-select: none;
+    }
+
+    footer.note {
+      padding: 0.35rem 1rem;
+      font-size: 0.65rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer.note a { color: var(--accent-dim); }
+
+    input[type="file"] { display: none; }
+
+    .branch-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+      flex-wrap: wrap;
+    }
+    .branch-bar label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .branch-bar select {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      min-width: 160px;
+      max-width: min(280px, 40vw);
+    }
+    .branch-bar select:focus {
+      outline: none;
+      border-color: var(--accent-dim);
     }
   </style>
 </head>
 <body>
-  <div class="container">
-
-    <!-- Bootstrap -->
-    <div class="auth-wrap hidden" id="bootstrapWrap">
-      <div class="card">
-        <h2>🚀 Initialisation de Nexora</h2>
-        <p class="subtitle">Crée la première organisation et le premier compte superadmin.</p>
-
-        <div class="error" id="bootstrapError"></div>
-        <div class="success" id="bootstrapSuccess"></div>
-
-        <div class="field">
-          <label>Nom de l'organisation</label>
-          <input id="bootOrgName" type="text" placeholder="Ex: Nexora Groupe">
-        </div>
-
-        <div class="field">
-          <label>Slug organisation</label>
-          <input id="bootOrgSlug" type="text" placeholder="Ex: nexora-groupe">
-        </div>
-
-        <div class="field">
-          <label>Nom complet</label>
-          <input id="bootName" type="text" placeholder="Ex: Félix Caron">
-        </div>
-
-        <div class="field">
-          <label>Email admin</label>
-          <input id="bootEmail" type="email" placeholder="admin@nexora.ca">
-        </div>
-
-        <div class="field">
-          <label>Mot de passe</label>
-          <input id="bootPassword" type="password" placeholder="Minimum 8 caractères">
-        </div>
-
-        <button class="btn" onclick="bootstrapApp()">Créer le portail</button>
+  <div class="app">
+    <header>
+      <h1>Vibe Coder</h1>
+      <div class="header-row">
+        <label class="sr" for="apiKey">Anthropic API key</label>
+        <input type="password" id="apiKey" placeholder="Anthropic API key (sk-ant-…)" autocomplete="off" />
+        <button type="button" id="loadSession" class="ghost">Load session.json</button>
+        <input type="file" id="sessionFile" accept="application/json,.json" />
       </div>
+      <button type="button" id="closeSession" class="primary">Close session &amp; download</button>
+    </header>
+
+    <div class="branch-bar" aria-label="Projects">
+      <label for="branchSelect">Project</label>
+      <select id="branchSelect" title="Switch project"></select>
+      <button type="button" id="newBranch" title="New project">+ Project</button>
+      <button type="button" id="duplicateBranch" title="Duplicate current project">Duplicate</button>
+      <button type="button" id="renameBranch">Rename</button>
+      <button type="button" id="deleteBranch" class="danger">Delete</button>
     </div>
 
-    <!-- Login -->
-    <div class="auth-wrap hidden" id="loginWrap">
-      <div class="card">
-        <h2>🔐 Connexion Nexora</h2>
-        <p class="subtitle">Connecte-toi à ton portail entreprise sécurisé.</p>
-
-        <div class="error" id="loginError"></div>
-
-        <div class="field">
-          <label>Organisation</label>
-          <input id="loginOrganization" type="text" placeholder="Ex: nexora-groupe">
-        </div>
-
-        <div class="field">
-          <label>Email</label>
-          <input id="loginEmail" type="email" placeholder="Ex: admin@nexora.ca">
-        </div>
-
-        <div class="field">
-          <label>Mot de passe</label>
-          <input id="loginPassword" type="password" placeholder="Ton mot de passe">
-        </div>
-
-        <button class="btn" onclick="login()">Se connecter</button>
-      </div>
-    </div>
-
-    <!-- App -->
-    <div class="hidden" id="appWrap">
-      <div class="topbar">
-        <div>
-          <h1 id="orgName">Nexora</h1>
-          <div class="muted" id="orgSubtitle">Portail entreprise</div>
-        </div>
-        <div class="user-badge">
-          <div><strong id="meName">Utilisateur</strong></div>
-          <div class="small" id="meEmail">email@example.com</div>
-          <div class="small" id="meRole">role</div>
-          <div style="margin-top: 10px;">
-            <button class="btn danger" onclick="logout()">Déconnexion</button>
+    <div class="main">
+      <aside class="panel">
+        <div class="panel-head">
+          Files
+          <div class="actions">
+            <button type="button" id="newFile" title="New file">+ File</button>
+            <button type="button" id="delFile" class="danger" title="Delete selected">Del</button>
           </div>
         </div>
-      </div>
+        <div class="file-list" id="fileList"></div>
+      </aside>
 
-      <div class="grid stats">
-        <div class="stat-card">
-          <div class="stat-label">Utilisateurs</div>
-          <div class="stat-value" id="statUsers">0</div>
+      <section class="panel editor-wrap">
+        <div class="panel-head">
+          <span id="editorLabel">Editor</span>
+          <div class="view-tabs" role="tablist" aria-label="Editor view">
+            <button type="button" id="viewCode" class="active" role="tab" aria-selected="true">Code</button>
+            <button type="button" id="viewPreview" role="tab" aria-selected="false">Preview &amp; terminal</button>
+          </div>
+          <div class="actions">
+            <label class="toolbar-checkbox"><input type="checkbox" id="autoApply" checked /> Auto-apply code blocks</label>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Projets</div>
-          <div class="stat-value" id="statProjects">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Organisation</div>
-          <div class="stat-value" id="statOrg">1</div>
-        </div>
-      </div>
-
-      <div class="dashboard-grid">
-        <div class="section-card">
-          <h3>📋 Projets</h3>
-          <p class="subtitle">Vue d'ensemble des projets de l'organisation.</p>
-          <div id="projectsList"></div>
-        </div>
-
-        <div class="section-card">
-          <h3>⚙️ Administration</h3>
-          <p class="subtitle">Visible selon ton rôle.</p>
-
-          <div class="info" id="adminInfo"></div>
-          <div class="error" id="adminError"></div>
-          <div class="success" id="adminSuccess"></div>
-
-          <div id="adminBlock" class="hidden">
-            <div class="tabs">
-              <button class="tab-btn active" onclick="openTab('usersTab', this)">Utilisateurs</button>
-              <button class="tab-btn" onclick="openTab('projectsTab', this)">Projets</button>
-              <button class="tab-btn hidden" id="orgTabBtn" onclick="openTab('orgsTab', this)">Organisations</button>
+        <div class="editor-tabs" id="editorTabs"></div>
+        <div class="editor-stack" id="editorStack">
+          <textarea class="editor" id="editor" spellcheck="false" placeholder="Select or create a file…"></textarea>
+          <div class="preview-pane" id="previewPane" aria-hidden="true">
+            <div class="preview-toolbar">
+              <label for="previewEntry">HTML entry</label>
+              <select id="previewEntry" title="HTML file to preview"></select>
+              <button type="button" id="previewRefresh">Refresh preview</button>
+              <button type="button" id="previewOpenTab" class="ghost" title="Open in new tab">Open tab</button>
             </div>
-
-            <div class="tab-panel active" id="usersTab">
-              <div class="split-2">
-                <div>
-                  <h4>Créer un utilisateur</h4>
-                  <div class="field">
-                    <label>Nom</label>
-                    <input id="newUserName" type="text">
-                  </div>
-                  <div class="field">
-                    <label>Email</label>
-                    <input id="newUserEmail" type="email">
-                  </div>
-                  <div class="field">
-                    <label>Mot de passe</label>
-                    <input id="newUserPassword" type="password">
-                  </div>
-                  <div class="field">
-                    <label>Département</label>
-                    <input id="newUserDepartment" type="text">
-                  </div>
-                  <div class="field">
-                    <label>Rôle</label>
-                    <select id="newUserRole">
-                      <option value="user">user</option>
-                      <option value="manager">manager</option>
-                      <option value="admin">admin</option>
-                      <option value="superadmin">superadmin</option>
-                    </select>
-                  </div>
-                  <div class="field hidden" id="userOrgField">
-                    <label>Organisation</label>
-                    <select id="newUserOrganization"></select>
-                  </div>
-                  <button class="btn" onclick="createUser()">Créer l'utilisateur</button>
-                </div>
-                <div>
-                  <h4>Liste des utilisateurs</h4>
-                  <div id="usersList"></div>
-                </div>
+            <div class="preview-frame-wrap">
+              <iframe id="previewFrame" title="Preview" sandbox="allow-scripts allow-same-origin"></iframe>
+            </div>
+            <div class="terminal-panel">
+              <div class="terminal-head">
+                Terminal
+                <span class="spacer"></span>
+                <button type="button" id="termRunFile" class="ghost" style="font-size:0.65rem;padding:0.2rem 0.45rem;">Run open file</button>
+                <button type="button" id="termClear" class="ghost" style="font-size:0.65rem;padding:0.2rem 0.45rem;">Clear</button>
               </div>
-            </div>
-
-            <div class="tab-panel" id="projectsTab">
-              <div class="split-2">
-                <div>
-                  <h4>Créer un projet</h4>
-                  <div class="field">
-                    <label>Nom</label>
-                    <input id="newProjectName" type="text">
-                  </div>
-                  <div class="field">
-                    <label>Description</label>
-                    <textarea id="newProjectDescription"></textarea>
-                  </div>
-                  <div class="field">
-                    <label>Statut</label>
-                    <select id="newProjectStatus">
-                      <option value="active">active</option>
-                      <option value="en_cours">en_cours</option>
-                      <option value="termine">termine</option>
-                    </select>
-                  </div>
-                  <div class="field hidden" id="projectOrgField">
-                    <label>Organisation</label>
-                    <select id="newProjectOrganization"></select>
-                  </div>
-                  <button class="btn" onclick="createProject()">Créer le projet</button>
-                </div>
-                <div>
-                  <h4>Conseils</h4>
-                  <p class="small">
-                    Les managers peuvent créer des projets dans leur organisation.
-                    Les admins gèrent les utilisateurs de leur organisation.
-                    Les superadmins peuvent gérer toutes les organisations.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="tab-panel" id="orgsTab">
-              <div class="split-2">
-                <div>
-                  <h4>Créer une organisation</h4>
-                  <div class="field">
-                    <label>Nom</label>
-                    <input id="newOrgName" type="text">
-                  </div>
-                  <div class="field">
-                    <label>Slug</label>
-                    <input id="newOrgSlug" type="text" placeholder="ex: division-est">
-                  </div>
-                  <div class="field">
-                    <label>Description</label>
-                    <textarea id="newOrgDescription"></textarea>
-                  </div>
-                  <div class="field">
-                    <label>Logo URL</label>
-                    <input id="newOrgLogo" type="text">
-                  </div>
-                  <button class="btn" onclick="createOrganization()">Créer l'organisation</button>
-                </div>
-                <div>
-                  <h4>Liste des organisations</h4>
-                  <div id="organizationsList"></div>
-                </div>
+              <pre class="terminal-out" id="termOut"></pre>
+              <div class="terminal-in-row">
+                <span class="prompt">$</span>
+                <input type="text" id="termIn" placeholder='run app.py · run index.html · run data.json · help' autocomplete="off" spellcheck="false" />
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div id="adminUnavailable" class="small">
-            Tu n'as pas de privilèges d'administration.
+      <aside class="panel chat-panel">
+        <div class="panel-head">
+          Chat
+          <div class="actions">
+            <button type="button" id="clearChat">Clear chat</button>
           </div>
         </div>
-      </div>
+        <div class="messages" id="messages"></div>
+        <div class="composer">
+          <p class="hint">Model: <strong id="modelLabel">claude-haiku-4-5</strong> · Files are sent as workspace context. Assistant can update files with fenced blocks: path as language tag.</p>
+          <textarea id="chatInput" placeholder="Ask for code, refactors, or explain the workspace…"></textarea>
+          <div class="composer-row">
+            <button type="button" id="send" class="primary">Send</button>
+            <button type="button" id="stop" disabled>Stop</button>
+            <span class="status" id="status"></span>
+          </div>
+        </div>
+      </aside>
     </div>
+
+    <footer class="note">
+      Browser calls use Anthropic’s <code>anthropic-dangerous-direct-browser-access</code> header (BYOK). Your key stays in this tab until you export. <code>session.json</code> is <strong>version 2</strong>: one file, shared API key, multiple <strong>projects</strong> (branches)—each with its own files and chat. Legacy v1 exports load as a single project. <strong>Preview</strong> inlines workspace CSS/JS into your HTML (no network). <strong>Terminal</strong> runs <code>.js</code>, <strong>Python</strong> (<a href="https://pyodide.org/">Pyodide</a>, first run downloads ~20MB from CDN), and pretty-prints <code>.json</code>—not a real OS shell.
+    </footer>
   </div>
 
   <script>
-    async function api(path, options = {}) {
-      const response = await fetch(path, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...(options.headers || {})
-        },
-        ...options
+(function () {
+  "use strict";
+
+  const MODEL = "claude-haiku-4-5";
+  const MAX_CONTEXT_CHARS = 350_000;
+
+  const API_KEY_EL = document.getElementById("apiKey");
+  const FILE_LIST_EL = document.getElementById("fileList");
+  const EDITOR_EL = document.getElementById("editor");
+  const EDITOR_TABS_EL = document.getElementById("editorTabs");
+  const EDITOR_LABEL_EL = document.getElementById("editorLabel");
+  const MESSAGES_EL = document.getElementById("messages");
+  const CHAT_INPUT_EL = document.getElementById("chatInput");
+  const STATUS_EL = document.getElementById("status");
+  const SEND_BTN = document.getElementById("send");
+  const STOP_BTN = document.getElementById("stop");
+  const AUTO_APPLY_EL = document.getElementById("autoApply");
+  const SESSION_FILE_EL = document.getElementById("sessionFile");
+  const BRANCH_SELECT_EL = document.getElementById("branchSelect");
+  const EDITOR_STACK_EL = document.getElementById("editorStack");
+  const VIEW_CODE_BTN = document.getElementById("viewCode");
+  const VIEW_PREVIEW_BTN = document.getElementById("viewPreview");
+  const PREVIEW_ENTRY_EL = document.getElementById("previewEntry");
+  const PREVIEW_FRAME_EL = document.getElementById("previewFrame");
+  const TERM_OUT_EL = document.getElementById("termOut");
+  const TERM_IN_EL = document.getElementById("termIn");
+
+  const SESSION_VERSION = 2;
+
+  /**
+   * @typedef {{ id: string, name: string, createdAt: string, updatedAt: string, activePath: string | null, files: Record<string, string>, conversation: { role: string, content: string }[] }} Branch
+   */
+
+  /** @type {Branch[]} */
+  let branches = [];
+  /** @type {string | null} */
+  let activeBranchId = null;
+
+  /** @type {Record<string, string>} */
+  let files = {};
+  /** @type {string | null} */
+  let activePath = null;
+  /** @type {{ role: string, content: string }[]} */
+  let conversation = [];
+
+  let abortController = null;
+
+  function defaultFiles() {
+    return {
+      "README.md": "# Vibe Coder workspace\n\nTry the chat →",
+    };
+  }
+
+  function makeBranch(name) {
+    const now = new Date().toISOString();
+    return {
+      id: crypto.randomUUID(),
+      name,
+      createdAt: now,
+      updatedAt: now,
+      activePath: "README.md",
+      files: defaultFiles(),
+      conversation: [],
+    };
+  }
+
+  function normalizeBranch(raw) {
+    const id =
+      typeof raw.id === "string" && raw.id
+        ? raw.id
+        : crypto.randomUUID();
+    const now = new Date().toISOString();
+    let fl =
+      raw.files && typeof raw.files === "object" ? { ...raw.files } : defaultFiles();
+    if (!Object.keys(fl).length) fl = defaultFiles();
+    const conv = Array.isArray(raw.conversation)
+      ? raw.conversation.map((m) => ({
+          role: m.role,
+          content: typeof m.content === "string" ? m.content : "",
+        }))
+      : [];
+    let ap =
+      typeof raw.activePath === "string" && fl[raw.activePath] !== undefined
+        ? raw.activePath
+        : Object.keys(fl).sort()[0] || null;
+    return {
+      id,
+      name: typeof raw.name === "string" && raw.name ? raw.name : "Untitled",
+      createdAt: typeof raw.createdAt === "string" ? raw.createdAt : now,
+      updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : now,
+      activePath: ap,
+      files: fl,
+      conversation: conv,
+    };
+  }
+
+  /** Convert v1 payload or v2 payload into { apiKey, model, activeBranchId, branches } */
+  function normalizeLoadedSession(data) {
+    const apiKey = typeof data.apiKey === "string" ? data.apiKey : "";
+    const model = typeof data.model === "string" ? data.model : MODEL;
+
+    if (data.version === 2 && Array.isArray(data.branches)) {
+      const br = data.branches.map(normalizeBranch);
+      if (!br.length) {
+        const b = makeBranch("Main");
+        return { apiKey, model, activeBranchId: b.id, branches: [b] };
+      }
+      let activeId =
+        typeof data.activeBranchId === "string" ? data.activeBranchId : "";
+      if (!br.some((x) => x.id === activeId)) activeId = br[0].id;
+      return { apiKey, model, activeBranchId: activeId, branches: br };
+    }
+
+    if (data.files && typeof data.files === "object") {
+      const merged = normalizeBranch({
+        id: crypto.randomUUID(),
+        name: "Main",
+        createdAt: data.exportedAt,
+        updatedAt: data.exportedAt,
+        activePath: data.activePath,
+        files: data.files,
+        conversation: data.conversation,
       });
-
-      let data = null;
-      try {
-        data = await response.json();
-      } catch {}
-
-      if (!response.ok) {
-        throw new Error(data?.error || "Erreur API");
-      }
-
-      return data;
-    }
-
-    function showBox(id, message) {
-      const el = document.getElementById(id);
-      el.textContent = message;
-      el.style.display = "block";
-    }
-
-    function hideBox(id) {
-      const el = document.getElementById(id);
-      el.style.display = "none";
-      el.textContent = "";
-    }
-
-    function hideAllMessages() {
-      [
-        "bootstrapError", "bootstrapSuccess",
-        "loginError",
-        "adminInfo", "adminError", "adminSuccess"
-      ].forEach(hideBox);
-    }
-
-    function openTab(tabId, button) {
-      document.querySelectorAll(".tab-panel").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
-      document.getElementById(tabId).classList.add("active");
-      button.classList.add("active");
-    }
-
-    async function bootstrapApp() {
-      hideAllMessages();
-
-      const payload = {
-        organization_name: document.getElementById("bootOrgName").value.trim(),
-        organization_slug: document.getElementById("bootOrgSlug").value.trim(),
-        name: document.getElementById("bootName").value.trim(),
-        email: document.getElementById("bootEmail").value.trim(),
-        password: document.getElementById("bootPassword").value
+      return {
+        apiKey,
+        model,
+        activeBranchId: merged.id,
+        branches: [merged],
       };
-
-      try {
-        await api("/api/bootstrap", {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-
-        showBox("bootstrapSuccess", "Portail créé avec succès. Chargement...");
-        await loadApp();
-      } catch (error) {
-        showBox("bootstrapError", error.message);
-      }
     }
 
-    async function login() {
-      hideAllMessages();
+    throw new Error("Unrecognized session.json shape");
+  }
 
-      const payload = {
-        organization: document.getElementById("loginOrganization").value.trim(),
-        email: document.getElementById("loginEmail").value.trim(),
-        password: document.getElementById("loginPassword").value
-      };
+  function branchToSnapshot(b) {
+    return {
+      id: b.id,
+      name: b.name,
+      createdAt: b.createdAt,
+      updatedAt: b.updatedAt,
+      activePath: b.activePath,
+      files: { ...b.files },
+      conversation: b.conversation.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+    };
+  }
 
-      try {
-        await api("/api/login", {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
+  function syncActiveBranch() {
+    if (!activeBranchId) return;
+    persistEditorToVfs();
+    const b = branches.find((x) => x.id === activeBranchId);
+    if (!b) return;
+    b.files = { ...files };
+    b.conversation = conversation.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+    b.activePath = activePath;
+    b.updatedAt = new Date().toISOString();
+  }
 
-        await loadApp();
-      } catch (error) {
-        showBox("loginError", error.message);
+  function renderBranchSelect() {
+    BRANCH_SELECT_EL.innerHTML = "";
+    const sorted = [...branches].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+    );
+    for (const b of sorted) {
+      const opt = document.createElement("option");
+      opt.value = b.id;
+      opt.textContent = b.name;
+      BRANCH_SELECT_EL.appendChild(opt);
+    }
+    BRANCH_SELECT_EL.value = activeBranchId || "";
+  }
+
+  function renderMessagesFromConversation() {
+    MESSAGES_EL.innerHTML = "";
+    for (const m of conversation) {
+      if (m.role === "user") {
+        const short =
+          m.content.split("\n\n---\n\n")[0]?.trim() || m.content.slice(0, 200);
+        appendMessage("user", short);
+      } else if (m.role === "assistant") {
+        appendMessage("assistant", m.content);
       }
     }
+    MESSAGES_EL.scrollTop = MESSAGES_EL.scrollHeight;
+  }
 
-    async function logout() {
-      try {
-        await api("/api/logout", { method: "POST", body: "{}" });
-      } catch {}
-      document.getElementById("appWrap").classList.add("hidden");
-      document.getElementById("loginWrap").classList.remove("hidden");
+  /** @param {string} id */
+  function loadBranch(id) {
+    const target = branches.find((x) => x.id === id);
+    if (!target) return;
+    if (activeBranchId && activeBranchId !== id) {
+      syncActiveBranch();
     }
-
-    function renderProjects(projects) {
-      const list = document.getElementById("projectsList");
-      if (!projects.length) {
-        list.innerHTML = `<div class="list-empty">Aucun projet pour le moment.</div>`;
-        return;
-      }
-
-      list.innerHTML = projects.map(project => `
-        <div class="project-card">
-          <h4>${escapeHtml(project.name)}</h4>
-          <div class="small">${escapeHtml(project.description || "Sans description")}</div>
-          <div>
-            <span class="tag">${escapeHtml(project.status || "active")}</span>
-            ${project.owner_name ? `<span class="tag">Owner: ${escapeHtml(project.owner_name)}</span>` : ""}
-          </div>
-        </div>
-      `).join("");
+    activeBranchId = id;
+    const snap = branchToSnapshot(target);
+    files = snap.files;
+    conversation = snap.conversation;
+    activePath =
+      typeof snap.activePath === "string" && files[snap.activePath] !== undefined
+        ? snap.activePath
+        : Object.keys(files).sort()[0] || null;
+    renderBranchSelect();
+    if (activePath) {
+      EDITOR_EL.value = files[activePath] ?? "";
+      EDITOR_LABEL_EL.textContent = activePath;
+    } else {
+      EDITOR_EL.value = "";
+      EDITOR_LABEL_EL.textContent = "Editor";
     }
+    renderFileList();
+    renderTabs();
+    renderMessagesFromConversation();
+  }
 
-    function renderUsers(users) {
-      const list = document.getElementById("usersList");
-      if (!users.length) {
-        list.innerHTML = `<div class="list-empty">Aucun utilisateur.</div>`;
-        return;
-      }
+  BRANCH_SELECT_EL.addEventListener("change", () => {
+    const id = BRANCH_SELECT_EL.value;
+    if (id && id !== activeBranchId) loadBranch(id);
+  });
 
-      list.innerHTML = users.map(user => `
-        <div class="user-card">
-          <strong>${escapeHtml(user.name)}</strong>
-          <div class="small">${escapeHtml(user.email)}</div>
-          <div class="small">${escapeHtml(user.department || "")}</div>
-          <div>
-            <span class="tag role-${escapeHtml(user.role)}">${escapeHtml(user.role)}</span>
-            <span class="tag">${escapeHtml(user.organization_name || "")}</span>
-          </div>
-        </div>
-      `).join("");
+  document.getElementById("newBranch").addEventListener("click", () => {
+    const n = branches.length + 1;
+    const b = makeBranch("Project " + n);
+    branches.push(b);
+    loadBranch(b.id);
+    setStatus("New project created.", "ok");
+  });
+
+  document.getElementById("duplicateBranch").addEventListener("click", () => {
+    if (!activeBranchId) return;
+    syncActiveBranch();
+    const cur = branches.find((x) => x.id === activeBranchId);
+    if (!cur) return;
+    const now = new Date().toISOString();
+    const copy = {
+      id: crypto.randomUUID(),
+      name: cur.name + " copy",
+      createdAt: now,
+      updatedAt: now,
+      activePath: cur.activePath,
+      files: { ...cur.files },
+      conversation: cur.conversation.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+    };
+    branches.push(copy);
+    loadBranch(copy.id);
+    setStatus("Project duplicated.", "ok");
+  });
+
+  document.getElementById("renameBranch").addEventListener("click", () => {
+    if (!activeBranchId) return;
+    const cur = branches.find((x) => x.id === activeBranchId);
+    if (!cur) return;
+    const name = window.prompt("Project name:", cur.name);
+    if (!name || !name.trim()) return;
+    cur.name = name.trim();
+    cur.updatedAt = new Date().toISOString();
+    renderBranchSelect();
+    BRANCH_SELECT_EL.value = activeBranchId;
+    setStatus("Renamed.", "ok");
+  });
+
+  document.getElementById("deleteBranch").addEventListener("click", () => {
+    if (branches.length <= 1) {
+      setStatus("Keep at least one project.", "error");
+      return;
     }
+    const cur = branches.find((x) => x.id === activeBranchId);
+    if (!cur) return;
+    if (!window.confirm("Delete project \"" + cur.name + "\"? This cannot be undone."))
+      return;
+    const idx = branches.findIndex((x) => x.id === activeBranchId);
+    branches.splice(idx, 1);
+    const next = branches[Math.max(0, idx - 1)] || branches[0];
+    activeBranchId = null;
+    loadBranch(next.id);
+    setStatus("Project deleted.", "ok");
+  });
 
-    function renderOrganizations(orgs) {
-      const list = document.getElementById("organizationsList");
-      if (!orgs.length) {
-        list.innerHTML = `<div class="list-empty">Aucune organisation.</div>`;
-        return;
-      }
+  const SYSTEM_PROMPT = `You are Vibe Coder, a concise coding assistant inside a browser workspace.
 
-      list.innerHTML = orgs.map(org => `
-        <div class="org-card">
-          <strong>${escapeHtml(org.name)}</strong>
-          <div class="small">Slug: ${escapeHtml(org.slug)}</div>
-          <div class="small">${escapeHtml(org.description || "")}</div>
-          <div>
-            <span class="tag">Users: ${Number(org.users_count || 0)}</span>
-            <span class="tag">Projects: ${Number(org.projects_count || 0)}</span>
-          </div>
-        </div>
-      `).join("");
+When you create or overwrite a file, emit a markdown fenced code block where the info string is the relative path (use forward slashes). Example:
+
+\`\`\`src/hello.js
+console.log("hi");
+\`\`\`
+
+You may include multiple file blocks in one reply. Paths should be unique per block; later blocks with the same path replace earlier ones in that message.
+
+Do not use bare language tags like javascript unless it is also a valid path you intend to write.
+
+Explain briefly, then give code. Prefer small focused files.`;
+
+  function setStatus(text, cls) {
+    STATUS_EL.textContent = text || "";
+    STATUS_EL.className = "status" + (cls ? " " + cls : "");
+  }
+
+  function renderFileList() {
+    FILE_LIST_EL.innerHTML = "";
+    const paths = Object.keys(files).sort();
+    for (const p of paths) {
+      const div = document.createElement("div");
+      div.className = "file-item" + (p === activePath ? " active" : "");
+      div.textContent = p;
+      div.title = p;
+      div.addEventListener("click", () => selectFile(p));
+      FILE_LIST_EL.appendChild(div);
     }
+    refreshPreviewEntryOptions();
+  }
 
-    function fillOrganizationSelect(selectId, organizations) {
-      const select = document.getElementById(selectId);
-      select.innerHTML = organizations.map(org => `
-        <option value="${org.id}">${escapeHtml(org.name)} (${escapeHtml(org.slug)})</option>
-      `).join("");
+  function renderTabs() {
+    EDITOR_TABS_EL.innerHTML = "";
+    const paths = Object.keys(files).sort();
+    for (const p of paths) {
+      const t = document.createElement("span");
+      t.className = "tab" + (p === activePath ? " active" : "");
+      t.textContent = p.split("/").pop() || p;
+      t.title = p;
+      t.addEventListener("click", () => selectFile(p));
+      EDITOR_TABS_EL.appendChild(t);
     }
+  }
 
-    async function createUser() {
-      hideBox("adminError");
-      hideBox("adminSuccess");
-
-      const payload = {
-        name: document.getElementById("newUserName").value.trim(),
-        email: document.getElementById("newUserEmail").value.trim(),
-        password: document.getElementById("newUserPassword").value,
-        department: document.getElementById("newUserDepartment").value.trim(),
-        role: document.getElementById("newUserRole").value
-      };
-
-      const orgSelect = document.getElementById("newUserOrganization");
-      if (!document.getElementById("userOrgField").classList.contains("hidden")) {
-        payload.organization_id = Number(orgSelect.value);
-      }
-
-      try {
-        await api("/api/admin/users", {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-
-        showBox("adminSuccess", "Utilisateur créé.");
-        document.getElementById("newUserName").value = "";
-        document.getElementById("newUserEmail").value = "";
-        document.getElementById("newUserPassword").value = "";
-        document.getElementById("newUserDepartment").value = "";
-        document.getElementById("newUserRole").value = "user";
-        await loadAdminData();
-        await refreshMainData();
-      } catch (error) {
-        showBox("adminError", error.message);
-      }
+  function selectFile(path) {
+    if (activePath && files[activePath] !== undefined && activePath !== path) {
+      files[activePath] = EDITOR_EL.value;
     }
+    activePath = path;
+    EDITOR_EL.value = files[path] ?? "";
+    EDITOR_LABEL_EL.textContent = path;
+    renderFileList();
+    renderTabs();
+  }
 
-    async function createProject() {
-      hideBox("adminError");
-      hideBox("adminSuccess");
-
-      const payload = {
-        name: document.getElementById("newProjectName").value.trim(),
-        description: document.getElementById("newProjectDescription").value.trim(),
-        status: document.getElementById("newProjectStatus").value
-      };
-
-      const orgSelect = document.getElementById("newProjectOrganization");
-      if (!document.getElementById("projectOrgField").classList.contains("hidden")) {
-        payload.organization_id = Number(orgSelect.value);
-      }
-
-      try {
-        await api("/api/admin/projects", {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-
-        showBox("adminSuccess", "Projet créé.");
-        document.getElementById("newProjectName").value = "";
-        document.getElementById("newProjectDescription").value = "";
-        document.getElementById("newProjectStatus").value = "active";
-        await refreshMainData();
-      } catch (error) {
-        showBox("adminError", error.message);
-      }
+  function persistEditorToVfs() {
+    if (activePath && files[activePath] !== undefined) {
+      files[activePath] = EDITOR_EL.value;
     }
+  }
 
-    async function createOrganization() {
-      hideBox("adminError");
-      hideBox("adminSuccess");
+  EDITOR_EL.addEventListener("input", () => {
+    if (activePath) files[activePath] = EDITOR_EL.value;
+  });
 
-      const payload = {
-        name: document.getElementById("newOrgName").value.trim(),
-        slug: document.getElementById("newOrgSlug").value.trim(),
-        description: document.getElementById("newOrgDescription").value.trim(),
-        logo_url: document.getElementById("newOrgLogo").value.trim()
-      };
-
-      try {
-        await api("/api/admin/organizations", {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-
-        showBox("adminSuccess", "Organisation créée.");
-        document.getElementById("newOrgName").value = "";
-        document.getElementById("newOrgSlug").value = "";
-        document.getElementById("newOrgDescription").value = "";
-        document.getElementById("newOrgLogo").value = "";
-        await loadAdminData();
-      } catch (error) {
-        showBox("adminError", error.message);
+  function buildWorkspaceBlock() {
+    persistEditorToVfs();
+    const parts = [];
+    let total = 0;
+    const ordered = Object.keys(files).sort();
+    for (const path of ordered) {
+      const body = files[path] ?? "";
+      const chunk = "### " + path + "\n\n```\n" + body + "\n```\n\n";
+      if (total + chunk.length > MAX_CONTEXT_CHARS) {
+        parts.push(
+          "_[Workspace truncated: add smaller files or remove unused paths. Omitted some files.]_\n"
+        );
+        break;
       }
+      total += chunk.length;
+      parts.push(chunk);
     }
+    return "## Workspace files\n\n" + parts.join("");
+  }
 
-    async function refreshMainData() {
-      const me = await api("/api/me");
-      const projectsData = await api("/api/projects");
-
-      document.getElementById("orgName").textContent = me.organization.name;
-      document.getElementById("orgSubtitle").textContent =
-        `${me.organization.slug} • ${me.organization.description || "Portail entreprise"}`;
-
-      document.getElementById("meName").textContent = me.user.name;
-      document.getElementById("meEmail").textContent = me.user.email;
-      document.getElementById("meRole").textContent =
-        `${me.user.role} • ${me.user.department || "Sans département"}`;
-
-      document.getElementById("statUsers").textContent = me.stats.users;
-      document.getElementById("statProjects").textContent = me.stats.projects;
-      document.getElementById("statOrg").textContent = 1;
-
-      renderProjects(projectsData.projects || []);
-
-      return me.user;
+  function appendMessage(role, content, isSystem) {
+    const wrap = document.createElement("div");
+    wrap.className = "bubble " + (isSystem ? "system" : role);
+    if (role === "user" || role === "assistant") {
+      const r = document.createElement("div");
+      r.className = "role";
+      r.textContent = role;
+      wrap.appendChild(r);
     }
+    const text = document.createTextNode(content);
+    wrap.appendChild(text);
+    MESSAGES_EL.appendChild(wrap);
+    MESSAGES_EL.scrollTop = MESSAGES_EL.scrollHeight;
+    return wrap;
+  }
 
-    async function loadAdminData() {
-      hideBox("adminError");
-      hideBox("adminSuccess");
-      hideBox("adminInfo");
-
-      let me;
-      try {
-        const meData = await api("/api/me");
-        me = meData.user;
-      } catch {
-        return;
-      }
-
-      const isAdmin = ["admin", "superadmin"].includes(me.role);
-      const canManageProj = ["manager", "admin", "superadmin"].includes(me.role);
-
-      document.getElementById("adminBlock").classList.toggle("hidden", !isAdmin && !canManageProj);
-      document.getElementById("adminUnavailable").classList.toggle("hidden", isAdmin || canManageProj);
-
-      if (!isAdmin && !canManageProj) {
-        return;
-      }
-
-      if (canManageProj || isAdmin) {
-        showBox("adminInfo", `Connecté avec le rôle: ${me.role}`);
-      }
-
-      if (isAdmin) {
-        const usersData = await api("/api/admin/users");
-        renderUsers(usersData.users || []);
-      }
-
-      if (me.role === "superadmin") {
-        document.getElementById("orgTabBtn").classList.remove("hidden");
-        document.getElementById("userOrgField").classList.remove("hidden");
-        document.getElementById("projectOrgField").classList.remove("hidden");
-
-        const orgData = await api("/api/admin/organizations");
-        renderOrganizations(orgData.organizations || []);
-        fillOrganizationSelect("newUserOrganization", orgData.organizations || []);
-        fillOrganizationSelect("newProjectOrganization", orgData.organizations || []);
-      } else {
-        document.getElementById("orgTabBtn").classList.add("hidden");
-        document.getElementById("userOrgField").classList.add("hidden");
-        document.getElementById("projectOrgField").classList.add("hidden");
-        document.getElementById("organizationsList").innerHTML = "";
+  function applyFileBlocks(text) {
+    const re = /```([^\n`]+)\n([\s\S]*?)```/g;
+    let m;
+    let count = 0;
+    while ((m = re.exec(text)) !== null) {
+      let path = m[1].trim();
+      if (path.startsWith(".")) continue;
+      if (/^(javascript|typescript|js|ts|tsx|jsx|python|py|rust|go|json|html|css|bash|sh|md|text)$/i.test(path))
+        continue;
+      if (path.includes(" ") && !path.includes("/")) continue;
+      const inner = m[2].replace(/\n$/, "");
+      files[path] = inner;
+      count++;
+    }
+    if (count) {
+      renderFileList();
+      renderTabs();
+      if (activePath && files[activePath] !== undefined) {
+        EDITOR_EL.value = files[activePath];
       }
     }
+    return count;
+  }
 
-    async function loadApp() {
-      try {
-        document.getElementById("bootstrapWrap").classList.add("hidden");
-        document.getElementById("loginWrap").classList.add("hidden");
-        document.getElementById("appWrap").classList.remove("hidden");
+  function getWorkspaceFiles() {
+    persistEditorToVfs();
+    return { ...files };
+  }
 
-        await refreshMainData();
-        await loadAdminData();
-      } catch {
-        document.getElementById("appWrap").classList.add("hidden");
-        document.getElementById("loginWrap").classList.remove("hidden");
+  function resolvePath(basePath, rel) {
+    if (
+      !rel ||
+      /^https?:\/\//i.test(rel) ||
+      rel.startsWith("//") ||
+      rel.startsWith("data:")
+    ) {
+      return rel;
+    }
+    const relClean = rel.split("#")[0].split("?")[0];
+    const baseDir = basePath.includes("/")
+      ? basePath.slice(0, basePath.lastIndexOf("/"))
+      : "";
+    const segments = [
+      ...(baseDir ? baseDir.split("/") : []),
+      ...relClean.split("/"),
+    ];
+    const out = [];
+    for (const seg of segments) {
+      if (!seg || seg === ".") continue;
+      if (seg === "..") out.pop();
+      else out.push(seg);
+    }
+    return out.join("/");
+  }
+
+  function readFromVfs(vfs, path) {
+    if (vfs[path] !== undefined) return vfs[path];
+    const trimmed = path.replace(/^\.\//, "");
+    if (vfs[trimmed] !== undefined) return vfs[trimmed];
+    return undefined;
+  }
+
+  /**
+   * Inline workspace CSS and JS into HTML for iframe preview.
+   * External http(s) assets are left as-is (may be blocked).
+   * @param {string} entryPath
+   * @param {Record<string, string>} vfs
+   */
+  function buildBundledHtml(entryPath, vfs) {
+    const html0 = readFromVfs(vfs, entryPath);
+    if (html0 === undefined) {
+      throw new Error("Missing file: " + entryPath);
+    }
+    let html = html0;
+
+    html = html.replace(/<link\s+([^>]*?)>/gi, (full, attrs) => {
+      const relM = attrs.match(/\brel\s*=\s*["']?stylesheet["']?/i);
+      if (!relM) return full;
+      const hrefM = attrs.match(/\bhref\s*=\s*["']([^"']+)["']/i);
+      if (!hrefM) return full;
+      const href = hrefM[1];
+      if (/^https?:\/\//i.test(href)) return full;
+      const abs = resolvePath(entryPath, href);
+      const css = readFromVfs(vfs, abs);
+      if (css === undefined) {
+        return (
+          "\n<!-- vibecoder: missing stylesheet " + href + " (resolved " + abs + ") -->\n"
+        );
       }
-    }
-
-    async function init() {
-      hideAllMessages();
-
-      try {
-        const bootStatus = await api("/api/bootstrap/status");
-
-        if (!bootStatus.initialized) {
-          document.getElementById("bootstrapWrap").classList.remove("hidden");
-          document.getElementById("loginWrap").classList.add("hidden");
-          document.getElementById("appWrap").classList.add("hidden");
-          return;
-        }
-
-        try {
-          await loadApp();
-        } catch {
-          document.getElementById("bootstrapWrap").classList.add("hidden");
-          document.getElementById("appWrap").classList.add("hidden");
-          document.getElementById("loginWrap").classList.remove("hidden");
-        }
-      } catch (error) {
-        document.getElementById("loginWrap").classList.remove("hidden");
-      }
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    ["loginOrganization", "loginEmail", "loginPassword"].forEach(id => {
-      window.addEventListener("load", () => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.addEventListener("keypress", e => {
-            if (e.key === "Enter") login();
-          });
-        }
-      });
+      return (
+        "\n<style data-vibecoder-href=\"" +
+        href +
+        "\">\n" +
+        css +
+        "\n</style>\n"
+      );
     });
 
-    init();
+    html = html.replace(
+      /<script\b([^>]*?)\bsrc\s*=\s*["']([^"']+)["']([^>]*?)>([\s\S]*?)<\/script>/gi,
+      (full, pre, src, postAttrs) => {
+        if (/^https?:\/\//i.test(src)) return full;
+        const abs = resolvePath(entryPath, src);
+        const js = readFromVfs(vfs, abs);
+        if (js === undefined) {
+          return (
+            "\n<!-- vibecoder: missing script " + src + " (resolved " + abs + ") -->\n"
+          );
+        }
+        const typeM = (pre + postAttrs).match(/\btype\s*=\s*["']([^"']+)["']/i);
+        const typeAttr = typeM
+          ? " type=\"" + typeM[1].replace(/"/g, "&quot;") + "\""
+          : "";
+        return (
+          "\n<script" +
+          typeAttr +
+          " data-vibecoder-src=\"" +
+          src +
+          "\">\n" +
+          js +
+          "\n</scr" +
+          "ipt>"
+        );
+      }
+    );
+
+    return html;
+  }
+
+  let previewBlobUrl = null;
+
+  function refreshPreviewEntryOptions() {
+    const vfs = getWorkspaceFiles();
+    const htmlPaths = Object.keys(vfs)
+      .filter((p) => /\.html?$/i.test(p))
+      .sort();
+    const prev = PREVIEW_ENTRY_EL.value;
+    PREVIEW_ENTRY_EL.innerHTML = "";
+    for (const p of htmlPaths) {
+      const opt = document.createElement("option");
+      opt.value = p;
+      opt.textContent = p;
+      PREVIEW_ENTRY_EL.appendChild(opt);
+    }
+    if (!htmlPaths.length) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "— no .html files —";
+      PREVIEW_ENTRY_EL.appendChild(opt);
+      return;
+    }
+    const want =
+      prev && htmlPaths.includes(prev)
+        ? prev
+        : htmlPaths.includes("index.html")
+          ? "index.html"
+          : htmlPaths[0];
+    PREVIEW_ENTRY_EL.value = want;
+  }
+
+  function runPreview() {
+    refreshPreviewEntryOptions();
+    const entry = PREVIEW_ENTRY_EL.value;
+    if (!entry) {
+      PREVIEW_FRAME_EL.removeAttribute("srcdoc");
+      termLine("Add an .html file to use preview.", "out-err");
+      return;
+    }
+    try {
+      const bundled = buildBundledHtml(entry, getWorkspaceFiles());
+      PREVIEW_FRAME_EL.srcdoc = bundled;
+      termLine("Preview updated: " + entry, "out-ok");
+    } catch (e) {
+      PREVIEW_FRAME_EL.removeAttribute("srcdoc");
+      termLine("Preview error: " + (e.message || e), "out-err");
+    }
+  }
+
+  function openPreviewInNewTab() {
+    const entry = PREVIEW_ENTRY_EL.value;
+    if (!entry) {
+      termLine("No HTML entry selected.", "out-err");
+      return;
+    }
+    try {
+      const bundled = buildBundledHtml(entry, getWorkspaceFiles());
+      if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+      previewBlobUrl = URL.createObjectURL(
+        new Blob([bundled], { type: "text/html;charset=utf-8" })
+      );
+      window.open(previewBlobUrl, "_blank", "noopener,noreferrer");
+      termLine("Opened new tab (blob URL).", "out-ok");
+    } catch (e) {
+      termLine("Open tab error: " + (e.message || e), "out-err");
+    }
+  }
+
+  function termLine(text, cls) {
+    const line = document.createElement("div");
+    if (cls) line.className = cls;
+    line.textContent = text;
+    TERM_OUT_EL.appendChild(line);
+    TERM_OUT_EL.scrollTop = TERM_OUT_EL.scrollHeight;
+  }
+
+  const PYODIDE_INDEX_URL =
+    "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
+  let pyodideInstance = null;
+  let pyodideLoadPromise = null;
+
+  function mkdirpPy(py, path) {
+    const parts = path.split("/").filter(Boolean);
+    let cur = "";
+    for (let i = 0; i < parts.length; i++) {
+      cur += "/" + parts[i];
+      try {
+        py.FS.mkdir(cur);
+      } catch (_) {
+        /* exists */
+      }
+    }
+  }
+
+  function rmTreePy(py, path) {
+    try {
+      const st = py.FS.stat(path);
+      if (py.FS.isDir(st.mode)) {
+        const names = py.FS.readdir(path);
+        for (let i = 0; i < names.length; i++) {
+          const n = names[i];
+          if (n === "." || n === "..") continue;
+          rmTreePy(py, path + "/" + n);
+        }
+        py.FS.rmdir(path);
+      } else {
+        py.FS.unlink(path);
+      }
+    } catch (_) {
+      /* missing */
+    }
+  }
+
+  function mountVfsPy(py, vfs) {
+    rmTreePy(py, "/vfs");
+    try {
+      py.FS.mkdir("/vfs");
+    } catch (_) {}
+    const keys = Object.keys(vfs).sort();
+    for (let i = 0; i < keys.length; i++) {
+      const rel = keys[i];
+      const full = "/vfs/" + rel;
+      const slash = full.lastIndexOf("/");
+      const parent = full.slice(0, slash);
+      if (parent.length > "/vfs".length) {
+        mkdirpPy(py, parent);
+      }
+      py.FS.writeFile(full, vfs[rel], { encoding: "utf8" });
+    }
+  }
+
+  async function ensurePyodide() {
+    if (pyodideInstance) return pyodideInstance;
+    if (!pyodideLoadPromise) {
+      pyodideLoadPromise = (async function () {
+        termLine(
+          "Loading Pyodide (WebAssembly; needs network, ~15–25MB)…",
+          "out-meta"
+        );
+        if (typeof globalThis.loadPyodide !== "function") {
+          await new Promise(function (resolve, reject) {
+            const s = document.createElement("script");
+            s.src = PYODIDE_INDEX_URL + "pyodide.js";
+            s.onload = resolve;
+            s.onerror = function () {
+              reject(new Error("Failed to load Pyodide from CDN"));
+            };
+            document.head.appendChild(s);
+          });
+        }
+        const py = await globalThis.loadPyodide({
+          indexURL: PYODIDE_INDEX_URL,
+        });
+        pyodideInstance = py;
+        termLine("Pyodide ready.", "out-ok");
+        return py;
+      })();
+    }
+    try {
+      return await pyodideLoadPromise;
+    } catch (e) {
+      pyodideLoadPromise = null;
+      pyodideInstance = null;
+      throw e;
+    }
+  }
+
+  async function runPythonFile(path, vfs) {
+    const code = readFromVfs(vfs, path);
+    if (code === undefined) {
+      termLine("Not found: " + path, "out-err");
+      return;
+    }
+    termLine("Running " + path + " …", "out-meta");
+    let outBuf = "";
+    let errBuf = "";
+    try {
+      const py = await ensurePyodide();
+      mountVfsPy(py, vfs);
+      const scriptDir =
+        path.indexOf("/") === -1
+          ? "/vfs"
+          : "/vfs/" + path.slice(0, path.lastIndexOf("/"));
+      const prelude =
+        "import sys\n" +
+        'sys.path.insert(0, "/vfs")\n' +
+        "sys.path.insert(0, " +
+        JSON.stringify(scriptDir) +
+        ")\n";
+      const outDec = new TextDecoder("utf-8");
+      const errDec = new TextDecoder("utf-8");
+      py.setStdin({
+        stdin: function () {
+          const line = window.prompt(
+            "Python input() — enter a line, or Cancel for EOF:"
+          );
+          if (line === null) return undefined;
+          return line;
+        },
+        isatty: false,
+      });
+      py.setStdout({
+        write: function (buf) {
+          outBuf += outDec.decode(buf, { stream: true });
+          return buf.byteLength;
+        },
+      });
+      py.setStderr({
+        write: function (buf) {
+          errBuf += errDec.decode(buf, { stream: true });
+          return buf.byteLength;
+        },
+      });
+      await py.runPythonAsync(prelude + code);
+      outBuf += outDec.decode();
+      errBuf += errDec.decode();
+      if (errBuf) {
+        const es = errBuf.replace(/\r\n/g, "\n").replace(/\n$/, "");
+        es.split("\n").forEach(function (ln) {
+          termLine(ln, "out-err");
+        });
+      }
+      if (outBuf) {
+        const os = outBuf.replace(/\r\n/g, "\n").replace(/\n$/, "");
+        os.split("\n").forEach(function (ln) {
+          termLine(ln, "out-ok");
+        });
+      }
+    } catch (e) {
+      if (errBuf) {
+        const es = errBuf.replace(/\r\n/g, "\n").replace(/\n$/, "");
+        es.split("\n").forEach(function (ln) {
+          termLine(ln, "out-err");
+        });
+      }
+      termLine((e && e.message) || String(e), "out-err");
+    }
+  }
+
+  function runJsonFile(path, vfs) {
+    const t = readFromVfs(vfs, path);
+    if (t === undefined) {
+      termLine("Not found: " + path, "out-err");
+      return;
+    }
+    let data;
+    try {
+      data = JSON.parse(t);
+    } catch (e) {
+      termLine("JSON parse error: " + (e.message || e), "out-err");
+      return;
+    }
+    termLine(JSON.stringify(data, null, 2), "out-ok");
+  }
+
+  function runJsFile(path, vfs) {
+    const code = readFromVfs(vfs, path);
+    if (code === undefined) {
+      termLine("Not found: " + path, "out-err");
+      return;
+    }
+    const logs = [];
+    const fakeConsole = {
+      log: function () {
+        logs.push(
+          Array.prototype.slice.call(arguments).map(String).join(" ")
+        );
+      },
+      error: function () {
+        logs.push(
+          "[err] " +
+            Array.prototype.slice.call(arguments).map(String).join(" ")
+        );
+      },
+      warn: function () {
+        logs.push(
+          "[warn] " +
+            Array.prototype.slice.call(arguments).map(String).join(" ")
+        );
+      },
+      info: function () {
+        logs.push(
+          "[info] " +
+            Array.prototype.slice.call(arguments).map(String).join(" ")
+        );
+      },
+    };
+    const runner = new Function(
+      "console",
+      '"use strict";\nreturn (async () => {\n' + code + "\n})();"
+    );
+    Promise.resolve(runner(fakeConsole))
+      .then(function (ret) {
+        for (let i = 0; i < logs.length; i++) termLine(logs[i]);
+        if (ret !== undefined) {
+          termLine(
+            "[return] " +
+              (typeof ret === "object"
+                ? JSON.stringify(ret)
+                : String(ret)),
+            "out-meta"
+          );
+        }
+      })
+      .catch(function (e) {
+        for (let i = 0; i < logs.length; i++) termLine(logs[i]);
+        termLine((e && e.message) || String(e), "out-err");
+      });
+  }
+
+  function runWorkspaceFile(path) {
+    const vfs = getWorkspaceFiles();
+    const p = path.replace(/^\/+/, "").trim();
+    if (!p) {
+      termLine("Usage: run <path>", "out-err");
+      return;
+    }
+    if (readFromVfs(vfs, p) === undefined) {
+      termLine("Not found: " + p, "out-err");
+      return;
+    }
+    const lower = p.toLowerCase();
+    if (lower.endsWith(".html") || lower.endsWith(".htm")) {
+      refreshPreviewEntryOptions();
+      PREVIEW_ENTRY_EL.value = p;
+      if (!EDITOR_STACK_EL.classList.contains("preview-mode")) {
+        termLine('Switched to "Preview & terminal" for HTML.', "out-meta");
+        VIEW_PREVIEW_BTN.click();
+      } else {
+        runPreview();
+      }
+      return;
+    }
+    if (lower.endsWith(".json")) {
+      runJsonFile(p, vfs);
+      return;
+    }
+    if (lower.endsWith(".js") || lower.endsWith(".mjs") || lower.endsWith(".cjs")) {
+      termLine("Running " + p + " …", "out-meta");
+      runJsFile(p, vfs);
+      return;
+    }
+    if (lower.endsWith(".py")) {
+      runPythonFile(p, vfs).catch(function (e) {
+        termLine((e && e.message) || String(e), "out-err");
+      });
+      return;
+    }
+    termLine(
+      "Unsupported for run: " +
+        p +
+        " (try .html, .json, .js, .py)",
+      "out-err"
+    );
+  }
+
+  function catWorkspaceFile(path) {
+    const vfs = getWorkspaceFiles();
+    const p = path.replace(/^\/+/, "").trim();
+    const t = readFromVfs(vfs, p);
+    if (t === undefined) {
+      termLine("Not found: " + p, "out-err");
+      return;
+    }
+    termLine(t);
+  }
+
+  function handleTerminalCommand(line) {
+    const raw = line.trim();
+    if (!raw) return;
+    termLine("$ " + raw, "out-meta");
+    const lower = raw.toLowerCase();
+    if (lower === "help" || lower === "?") {
+      termLine(
+        [
+          "Commands:",
+          "  help — this text",
+          "  clear — empty output",
+          "  cat <path> — print file from workspace",
+          "  run <path> — .html → preview, .json → validate + pretty-print, .js/.mjs → JS sandbox, .py → Python (Pyodide)",
+          "  run with no path uses the file open in the editor.",
+        ].join("\n")
+      );
+      return;
+    }
+    if (lower === "clear") {
+      TERM_OUT_EL.innerHTML = "";
+      return;
+    }
+    if (lower.startsWith("cat ")) {
+      catWorkspaceFile(raw.slice(4).trim());
+      return;
+    }
+    if (lower.startsWith("run ")) {
+      runWorkspaceFile(raw.slice(4).trim());
+      return;
+    }
+    termLine('Unknown command. Try: help, cat <path>, run <path>', "out-err");
+  }
+
+  VIEW_CODE_BTN.addEventListener("click", () => {
+    EDITOR_STACK_EL.classList.remove("preview-mode");
+    VIEW_CODE_BTN.classList.add("active");
+    VIEW_PREVIEW_BTN.classList.remove("active");
+    VIEW_CODE_BTN.setAttribute("aria-selected", "true");
+    VIEW_PREVIEW_BTN.setAttribute("aria-selected", "false");
+    document.getElementById("previewPane").setAttribute("aria-hidden", "true");
+  });
+
+  VIEW_PREVIEW_BTN.addEventListener("click", () => {
+    EDITOR_STACK_EL.classList.add("preview-mode");
+    VIEW_PREVIEW_BTN.classList.add("active");
+    VIEW_CODE_BTN.classList.remove("active");
+    VIEW_PREVIEW_BTN.setAttribute("aria-selected", "true");
+    VIEW_CODE_BTN.setAttribute("aria-selected", "false");
+    document.getElementById("previewPane").setAttribute("aria-hidden", "false");
+    refreshPreviewEntryOptions();
+    runPreview();
+  });
+
+  document.getElementById("previewRefresh").addEventListener("click", runPreview);
+  PREVIEW_ENTRY_EL.addEventListener("change", runPreview);
+  document
+    .getElementById("previewOpenTab")
+    .addEventListener("click", openPreviewInNewTab);
+
+  document.getElementById("termClear").addEventListener("click", () => {
+    TERM_OUT_EL.innerHTML = "";
+  });
+
+  document.getElementById("termRunFile").addEventListener("click", () => {
+    persistEditorToVfs();
+    if (!activePath) {
+      termLine("No file open in editor.", "out-err");
+      return;
+    }
+    termLine("$ run " + activePath, "out-meta");
+    runWorkspaceFile(activePath);
+  });
+
+  TERM_IN_EL.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const v = TERM_IN_EL.value;
+      TERM_IN_EL.value = "";
+      if (v.trim().toLowerCase() === "run" && activePath) {
+        termLine("$ run " + activePath, "out-meta");
+        runWorkspaceFile(activePath);
+        return;
+      }
+      handleTerminalCommand(v);
+    }
+  });
+
+  /**
+   * @param {ReadableStreamDefaultReader<Uint8Array>} reader
+   * @param {(t: string) => void} onDelta
+   */
+  async function readSseStream(reader, onDelta) {
+    const dec = new TextDecoder();
+    let buf = "";
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      let idx;
+      while ((idx = buf.indexOf("\n\n")) !== -1) {
+        const raw = buf.slice(0, idx).trim();
+        buf = buf.slice(idx + 2);
+        const lines = raw.split("\n");
+        let dataLine = "";
+        for (const ln of lines) {
+          if (ln.startsWith("data:")) {
+            dataLine = ln.slice(5).trim();
+            break;
+          }
+        }
+        if (!dataLine || dataLine === "[DONE]") continue;
+        try {
+          const ev = JSON.parse(dataLine);
+          if (ev.type === "content_block_delta" && ev.delta?.type === "text_delta") {
+            onDelta(ev.delta.text || "");
+          }
+        } catch (_) { /* ignore */ }
+      }
+    }
+  }
+
+  async function sendChat() {
+    const key = API_KEY_EL.value.trim();
+    if (!key) {
+      setStatus("Add your API key first.", "error");
+      return;
+    }
+    const userText = CHAT_INPUT_EL.value.trim();
+    if (!userText) {
+      setStatus("Write a message.", "error");
+      return;
+    }
+
+    persistEditorToVfs();
+    const workspace = buildWorkspaceBlock();
+    const fullUser =
+      userText +
+      "\n\n---\n\n" +
+      workspace;
+
+    conversation.push({ role: "user", content: fullUser });
+    appendMessage("user", userText);
+
+    CHAT_INPUT_EL.value = "";
+    SEND_BTN.disabled = true;
+    STOP_BTN.disabled = false;
+    setStatus("Streaming…", "ok");
+
+    abortController = new AbortController();
+
+    const assistantEl = appendMessage("assistant", "");
+    const textNode = assistantEl.childNodes[assistantEl.childNodes.length - 1];
+    let assistantText = "";
+
+    const payload = {
+      model: MODEL,
+      max_tokens: 8192,
+      stream: true,
+      system: SYSTEM_PROMPT,
+      messages: conversation.map((m) => ({
+        role: m.role,
+        content: [{ type: "text", text: m.content }],
+      })),
+    };
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": key,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify(payload),
+        signal: abortController.signal,
+      });
+
+      if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || res.statusText);
+      }
+
+      const reader = res.body.getReader();
+      await readSseStream(reader, (delta) => {
+        assistantText += delta;
+        textNode.textContent = assistantText;
+        MESSAGES_EL.scrollTop = MESSAGES_EL.scrollHeight;
+      });
+
+      conversation.push({ role: "assistant", content: assistantText });
+
+      if (AUTO_APPLY_EL.checked) {
+        const n = applyFileBlocks(assistantText);
+        if (n) setStatus("Applied " + n + " file(s) from reply.", "ok");
+        else setStatus("Done.", "ok");
+      } else setStatus("Done.", "ok");
+    } catch (e) {
+      if (e.name === "AbortError") {
+        if (assistantText) {
+          conversation.push({ role: "assistant", content: assistantText });
+          appendMessage("system", "Generation stopped.");
+          if (AUTO_APPLY_EL.checked) applyFileBlocks(assistantText);
+        }
+        setStatus("Stopped.", "");
+      } else {
+        conversation.pop();
+        assistantEl.remove();
+        appendMessage("system", String(e.message || e), true);
+        setStatus("Request failed.", "error");
+      }
+    } finally {
+      SEND_BTN.disabled = false;
+      STOP_BTN.disabled = true;
+      abortController = null;
+    }
+  }
+
+  function stopChat() {
+    if (abortController) abortController.abort();
+  }
+
+  document.getElementById("newFile").addEventListener("click", () => {
+    let name = window.prompt("New file path (e.g. src/app.js):", "");
+    if (!name) return;
+    name = name.replace(/^\/+/, "").trim();
+    if (!name) return;
+    if (files[name] !== undefined) {
+      selectFile(name);
+      return;
+    }
+    files[name] = "";
+    selectFile(name);
+  });
+
+  document.getElementById("delFile").addEventListener("click", () => {
+    if (!activePath) return;
+    if (!window.confirm("Delete " + activePath + "?")) return;
+    delete files[activePath];
+    const remaining = Object.keys(files);
+    activePath = remaining.sort()[0] || null;
+    if (activePath) selectFile(activePath);
+    else {
+      EDITOR_EL.value = "";
+      EDITOR_LABEL_EL.textContent = "Editor";
+      renderFileList();
+      renderTabs();
+    }
+  });
+
+  document.getElementById("clearChat").addEventListener("click", () => {
+    if (!window.confirm("Clear all chat messages? (files unchanged)")) return;
+    conversation = [];
+    MESSAGES_EL.innerHTML = "";
+    setStatus("Chat cleared.", "");
+  });
+
+  document.getElementById("send").addEventListener("click", sendChat);
+  document.getElementById("stop").addEventListener("click", stopChat);
+
+  CHAT_INPUT_EL.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      sendChat();
+    }
+  });
+
+  document.getElementById("closeSession").addEventListener("click", () => {
+    syncActiveBranch();
+    const session = {
+      version: SESSION_VERSION,
+      exportedAt: new Date().toISOString(),
+      app: "vibe-coder",
+      model: MODEL,
+      apiKey: API_KEY_EL.value.trim(),
+      activeBranchId: activeBranchId,
+      branches: branches.map((b) => branchToSnapshot(b)),
+    };
+    const blob = new Blob([JSON.stringify(session, null, 2)], {
+      type: "application/json",
+    });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "session.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setStatus("Downloaded session.json (v" + SESSION_VERSION + ")", "ok");
+  });
+
+  document.getElementById("loadSession").addEventListener("click", () => {
+    SESSION_FILE_EL.click();
+  });
+
+  SESSION_FILE_EL.addEventListener("change", () => {
+    const f = SESSION_FILE_EL.files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result));
+        const norm = normalizeLoadedSession(data);
+        API_KEY_EL.value = norm.apiKey;
+        branches = norm.branches.map((b) => normalizeBranch(b));
+        activeBranchId = norm.activeBranchId;
+        if (!branches.some((x) => x.id === activeBranchId)) {
+          activeBranchId = branches[0]?.id ?? null;
+        }
+        renderBranchSelect();
+        if (activeBranchId) loadBranch(activeBranchId);
+        const vLabel =
+          data.version === 2 ? "v2" : data.version === 1 || data.files ? "v1→v2" : "v2";
+        setStatus("Loaded session (" + vLabel + ").", "ok");
+      } catch (e) {
+        appendMessage("system", "Invalid session.json: " + e.message, true);
+        setStatus("Load failed.", "error");
+      }
+      SESSION_FILE_EL.value = "";
+    };
+    reader.readAsText(f);
+  });
+
+  document.getElementById("modelLabel").textContent = MODEL;
+
+  const initial = makeBranch("Main");
+  branches = [initial];
+  activeBranchId = initial.id;
+  renderBranchSelect();
+  loadBranch(initial.id);
+})();
   </script>
 </body>
 </html>
