@@ -1,8 +1,3 @@
 name = "nexoraprodesk"
 compatibility_date = "2026-03-31"
-main = "api.js"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "orgportal-db"
-database_id = "be605049-9611-420f-8fac-4570a8c1e5ef"
+main = "index.html"
